@@ -6,7 +6,7 @@
 #include "ball.h"
 #include "data.h"
 
-#define MAX_BALL_NUM	2
+#define MAX_BALL_NUM	3
 
 static T_BALL *ballArray[MAX_BALL_NUM]={NULL};
 static gboolean running = TRUE;
@@ -18,8 +18,8 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 	T_SPEED s[2], cs, ps;
 	double xx,yy,rr,cs0,ps0,cs1,ps1,cx0,cx1,px0,px1,cy0,cy1,py0,py1,tmp;
 
-	r[0] = ball_getRadius(ballArray[0]);
-	r[1] = ball_getRadius(ballArray[1]);
+	r[0] = ball_getRadius(ballArray[ball0]);
+	r[1] = ball_getRadius(ballArray[ball1]);
 	ball_getPos(ballArray[ball0], &(x[0]), &(y[0]));
 	ball_getPos(ballArray[ball1], &(x[1]), &(y[1]));
 
@@ -90,7 +90,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 	}
 	s[0].xSpeed = cs.xSpeed + ps.xSpeed;
 	s[0].ySpeed = cs.ySpeed + ps.ySpeed;
-	ball_setSpeed(ballArray[0], s[0]);
+	ball_setSpeed(ballArray[ball0], s[0]);
 	//caculate ball1
 	if (mode)
 	{
@@ -108,15 +108,15 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 	}
 	s[1].xSpeed = cs.xSpeed + ps.xSpeed;
 	s[1].ySpeed = cs.ySpeed + ps.ySpeed;
-	ball_setSpeed(ballArray[1], s[1]);
+	ball_setSpeed(ballArray[ball1], s[1]);
 
 	while(rr<r[0]+r[1])
 	{
-		ball_move(ballArray[0], winWidth, winHeight);
-		ball_move(ballArray[1], winWidth, winHeight);
+		ball_move(ballArray[ball0], winWidth, winHeight);
+		ball_move(ballArray[ball1], winWidth, winHeight);
 
-		r[0] = ball_getRadius(ballArray[0]);
-		r[1] = ball_getRadius(ballArray[1]);
+		r[0] = ball_getRadius(ballArray[ball0]);
+		r[1] = ball_getRadius(ballArray[ball1]);
 		ball_getPos(ballArray[ball0], &(x[0]), &(y[0]));
 		ball_getPos(ballArray[ball1], &(x[1]), &(y[1]));
 		

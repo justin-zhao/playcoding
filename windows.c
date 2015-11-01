@@ -156,6 +156,7 @@ static void close_window (void)
 
 static void sigroutine(int signo)
 {
+	cairo_surface_t *lSurface;
 	int winWidth, winHeight;
 	cairo_t *cr;
 	
@@ -169,7 +170,7 @@ static void sigroutine(int signo)
 
 	if (pSurface)
 		cairo_surface_destroy (pSurface);
-	
+
 	pSurface = gdk_window_create_similar_surface (gtk_widget_get_window (pDraw),
 	                                             CAIRO_CONTENT_COLOR,
 									             winWidth,
