@@ -35,28 +35,28 @@ void ball_move(T_BALL *pBall, int winWidth, int winHeight)
 		return;
 	
 	pBall->x += pBall->speed.xSpeed;
-	if (pBall->x < 0)
+	if (pBall->x < pBall->r)
 	{
-		pBall->x = -pBall->x;
+		pBall->x = 2*pBall->r - pBall->x;
 		pBall->speed.xSpeed = -pBall->speed.xSpeed;
 	}
 
-	if (pBall->x > winWidth)
+	if (pBall->x > winWidth - pBall->r)
 	{
-		pBall->x = 2*winWidth - pBall->x;
+		pBall->x = 2*winWidth - pBall->x - 2*pBall->r;
 		pBall->speed.xSpeed = -pBall->speed.xSpeed;
 	}
 
 	pBall->y += pBall->speed.ySpeed;
-	if (pBall->y < 0)
+	if (pBall->y < pBall->r)
 	{
-		pBall->y = -pBall->y;
+		pBall->y = 2*pBall->r - pBall->y;
 		pBall->speed.ySpeed = -pBall->speed.ySpeed;
 	}
 
-	if (pBall->y > winHeight)
+	if (pBall->y > winHeight - pBall->r)
 	{
-		pBall->y = 2*winHeight - pBall->y;
+		pBall->y = 2*winHeight - pBall->y - 2*pBall->r;
 		pBall->speed.ySpeed = -pBall->speed.ySpeed;
 	}
 }

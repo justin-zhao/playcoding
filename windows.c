@@ -177,8 +177,8 @@ static void sigroutine(int signo)
 	
 	cr = cairo_create (pSurface);
 	
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_paint (cr);
+	//cairo_set_source_rgb (cr, 1, 1, 1);
+	//cairo_paint (cr);
 
 	refresh_all(cr, winWidth, winHeight);
 	

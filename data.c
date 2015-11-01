@@ -6,16 +6,19 @@
 #include <math.h>
 
 static T_BALL *pBall = NULL;
+static gboolean running = TRUE;
 
 void data_init()
 {
 	if (!pBall)
-		pBall = ball_init(100, 100, 10, CLR_RGB(random()%256,random()%256,random()%256));
+		pBall = ball_init(100, 100, 10, CLR_RGB(rand()%256,rand()%256,rand()%256));
 }
 
-void refresh_all(cairo_t *pCR, int winWidth, int winHeight)
+gboolean refresh_all(cairo_t *pCR, int winWidth, int winHeight)
 {
 	ball_refresh(pBall, pCR, winWidth, winHeight);
+
+	return running;
 }
 
 void data_destroy()
@@ -44,6 +47,12 @@ gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data
 	//press right
 	if (event->keyval == 65363)
 	   ball_addSpeed(pBall, 1, 0);
+
+	if (event->keyval == 46)
+		ball_setClr(pBall, CLR_RGB(rand()%256,rand()%256,rand()%256));
+
+	if (event->keyval == 113)
+		running = FALSE;
 	
 	return TRUE; 
 }
