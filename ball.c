@@ -32,6 +32,8 @@ T_SPEED ball_getSpeed(T_BALL *pBall)
 
 	speed.xSpeed = pBall->speed.xSpeed;
 	speed.ySpeed = pBall->speed.ySpeed;
+
+	return speed;
 }
 
 void ball_setSpeed(T_BALL *pBall, T_SPEED speed)

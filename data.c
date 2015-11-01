@@ -1,30 +1,134 @@
 //data.c
 
+#include <stdlib.h>
+#include <math.h>
 #include "global.h"
 #include "ball.h"
 #include "data.h"
-#include <math.h>
 
-#define MAX_BALL_NUM	3
+#define MAX_BALL_NUM	2
 
 static T_BALL *ballArray[MAX_BALL_NUM]={NULL};
 static gboolean running = TRUE;
 
-static void collision(int ball0, int ball1)
+static void collision(int ball0, int ball1, int winWidth, int winHeight)
 {
-	int x[2],y[2];
-	T_SPEED s[2];
+	int mode;
+	int x[2],y[2],r[2];
+	T_SPEED s[2], cs, ps;
+	double xx,yy,rr,cs0,ps0,cs1,ps1,cx0,cx1,px0,px1,cy0,cy1,py0,py1,tmp;
 
+	r[0] = ball_getRadius(ballArray[0]);
+	r[1] = ball_getRadius(ballArray[1]);
 	ball_getPos(ballArray[ball0], &(x[0]), &(y[0]));
 	ball_getPos(ballArray[ball1], &(x[1]), &(y[1]));
 
 	s[0] = ball_getSpeed(ballArray[ball0]);
 	s[1] = ball_getSpeed(ballArray[ball1]);
 
+	xx = abs(x[0] - x[1]);
+	yy = abs(y[0] - y[1]);
+	rr = pow(xx*xx+yy*yy,0.5);
+
+	if ((x[0]-x[1]>0 && y[0]-y[1]>0)
+		|| (x[0]-x[1]<0 && y[0]-y[1]<0))
+		mode = 0;
+	else
+		mode = 1;
+
+//transform to collision coordinate system
+	//caculate ball0
+	cx0 = xx*s[0].xSpeed/rr;
+	if (mode)
+	{
+		px0 = yy*s[0].xSpeed/rr;
+		cy0 = -yy*s[0].ySpeed/rr;
+	}
+	else
+	{
+		px0 = -yy*s[0].xSpeed/rr;
+		cy0 = yy*s[0].ySpeed/rr;
+	}
+	py0 = xx*s[0].ySpeed/rr;
+	cs0 = cx0 + cy0;
+	ps0 = px0 + py0;
+	//caculate ball1
+	cx1 = xx*s[1].xSpeed/rr;
+	if (mode)
+	{
+		px1 = yy*s[1].xSpeed/rr;
+		cy1 = -yy*s[1].ySpeed/rr;
+	}
+	else
+	{
+		px1 = -yy*s[1].xSpeed/rr;
+		cy1 = yy*s[1].ySpeed/rr;
+	}
+	py1 = xx*s[1].ySpeed/rr;
+	cs1 = cx1 + cy1;
+	ps1 = px1 + py1;
+	//exchange collision speed
+	tmp = cs0;
+	cs0 = cs1;
+	cs1 = tmp;
+
+//transform to normal coordinate system
+	//caculate ball0
+	if (mode)
+	{
+		cs.xSpeed = xx*cs0/rr;
+		cs.ySpeed = -yy*cs0/rr;
+		ps.xSpeed = yy*ps0/rr;
+		ps.ySpeed = xx*ps0/rr;
+	}
+	else
+	{
+		cs.xSpeed = yy*cs0/rr;
+		cs.ySpeed = xx*cs0/rr;
+		ps.xSpeed = -yy*ps0/rr;
+		ps.ySpeed = xx*ps0/rr;
+	}
+	s[0].xSpeed = cs.xSpeed + ps.xSpeed;
+	s[0].ySpeed = cs.ySpeed + ps.ySpeed;
+	ball_setSpeed(ballArray[0], s[0]);
+	//caculate ball1
+	if (mode)
+	{
+		cs.xSpeed = xx*cs1/rr;
+		cs.ySpeed = -yy*cs1/rr;
+		ps.xSpeed = yy*ps1/rr;
+		ps.ySpeed = xx*ps1/rr;
+	}
+	else
+	{
+		cs.xSpeed = yy*cs1/rr;
+		cs.ySpeed = xx*cs1/rr;
+		ps.xSpeed = -yy*ps1/rr;
+		ps.ySpeed = xx*ps1/rr;
+	}
+	s[1].xSpeed = cs.xSpeed + ps.xSpeed;
+	s[1].ySpeed = cs.ySpeed + ps.ySpeed;
+	ball_setSpeed(ballArray[1], s[1]);
+
+	while(rr<r[0]+r[1])
+	{
+		ball_move(ballArray[0], winWidth, winHeight);
+		ball_move(ballArray[1], winWidth, winHeight);
+
+		r[0] = ball_getRadius(ballArray[0]);
+		r[1] = ball_getRadius(ballArray[1]);
+		ball_getPos(ballArray[ball0], &(x[0]), &(y[0]));
+		ball_getPos(ballArray[ball1], &(x[1]), &(y[1]));
+		
+		xx = abs(x[0] - x[1]);
+		yy = abs(y[0] - y[1]);
+		rr = pow(xx*xx+yy*yy,0.5);
+	}
+
 	printf("Collision[%d,%d]...\r\n",ball0,ball1);
 }
 
-static void scanRelation()
+static void scanRelation(int winWidth, int winHeight)
 {
 	int i,j;
 	int x[2],y[2],r[2];
@@ -45,7 +149,7 @@ static void scanRelation()
 			//printf("xl=%ld,yl=%ld,rl=%ld\r\n",xl,yl,rl);
 
 			if (xl*xl+yl*yl < rl*rl)
-				collision(i,j);
+				collision(i, j, winWidth, winHeight);
 		}
 	}
 }
@@ -57,7 +161,7 @@ void data_init()
 	for(i=0; i<MAX_BALL_NUM; i++)
 	{
 		if (!ballArray[i])
-			ballArray[i] = ball_init(rand()%200, rand()%200, 10, CLR_RGB(rand()%256,rand()%256,rand()%256));
+			ballArray[i] = ball_init(rand()%200, rand()%200, 20, CLR_RGB(rand()%256,rand()%256,rand()%256));
 	}
 }
 
@@ -65,7 +169,7 @@ gboolean refresh_all(cairo_t *pCR, int winWidth, int winHeight)
 {
 	int i;
 
-	scanRelation();
+	scanRelation(winWidth, winHeight);
 	for(i=0; i<MAX_BALL_NUM; i++)
 	{
 		if (ballArray[i])

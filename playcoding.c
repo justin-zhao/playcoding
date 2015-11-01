@@ -3,7 +3,7 @@
 #include "data.h"
 #include "windows.h"
 
-int main (int    argc, char **argv)
+int main (int argc, char **argv)
 {
 	GtkApplication *app;
 	int status;

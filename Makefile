@@ -3,6 +3,7 @@
 TARGET := playcoding
 OBJS := playcoding.o
 SRCS := ball.c data.c windows.c playcoding.c
+#SRCS := playcoding.c
 BIN := ~/bin/
 
 # complier
@@ -28,7 +29,7 @@ CFLAGS := -c -g -W -Wall -O2
 LFLAGS := 
 
 $(TARGET) :
-	$(CC) $(INCLUDES) -o $@ $(SRCS) $(LIBS)
+	$(CC) $(INCLUDES) -o $@ $(SRCS) $(LIBS) -L/usr/lib/x86_64-linux-gnu -lm
 
 temp : $(OBJS)
 	$(LD) $(LFLAGS) -o $@ $< $(LIBS)
