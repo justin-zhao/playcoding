@@ -8,6 +8,14 @@ typedef struct _BALL{
 	unsigned int clr;			//color
 } T_BALL;
 
+int ball_getRadius(T_BALL *pBall);
+
+void ball_getPos(T_BALL *pBall, int *px, int *py);
+
+T_SPEED ball_getSpeed(T_BALL *pBall);
+
+void ball_setSpeed(T_BALL *pBall, T_SPEED speed);
+
 //draw ball on the surface
 void ball_show(T_BALL *pBall, cairo_t *pCR);
 

@@ -6,6 +6,43 @@
 #include "global.h"
 #include "ball.h"
 
+int ball_getRadius(T_BALL *pBall)
+{
+	if (!pBall)
+		return 0;
+
+	return pBall->r;
+}
+
+void ball_getPos(T_BALL *pBall, int *px, int *py)
+{
+	if (!pBall)
+		return;
+
+	*px = pBall->x;
+	*py = pBall->y;
+}
+
+T_SPEED ball_getSpeed(T_BALL *pBall)
+{
+	T_SPEED speed;
+
+	if (!pBall)
+		return speed;
+
+	speed.xSpeed = pBall->speed.xSpeed;
+	speed.ySpeed = pBall->speed.ySpeed;
+}
+
+void ball_setSpeed(T_BALL *pBall, T_SPEED speed)
+{
+	if (!pBall)
+		return;
+
+	pBall->speed.xSpeed = speed.xSpeed;
+	pBall->speed.ySpeed = speed.ySpeed;
+}
+
 //show ball on surface
 void ball_show(T_BALL *pBall, cairo_t *pCR)
 {
@@ -80,8 +117,8 @@ T_BALL *ball_init(int x, int y, int r, unsigned int clr)
 	pBall->r = r;
 	pBall->clr = clr;
 	pBall->width = 2;
-	pBall->speed.xSpeed = 2;
-	pBall->speed.ySpeed = 2;
+	pBall->speed.xSpeed = rand()%10+1;
+	pBall->speed.ySpeed = rand()%10+1;
 	
 	return pBall;
 }
