@@ -168,15 +168,15 @@ static void sigroutine(int signo)
 	if (signo != SIGALRM)
 		return;
 
-	if (pSurface)
-		cairo_surface_destroy (pSurface);
+//	if (pSurface)
+//		cairo_surface_destroy (pSurface);
 
-	pSurface = gdk_window_create_similar_surface (gtk_widget_get_window (pDraw),
+	lSurface = gdk_window_create_similar_surface (gtk_widget_get_window (pDraw),
 	                                             CAIRO_CONTENT_COLOR,
 									             winWidth,
 												 winHeight);
 	
-	cr = cairo_create (pSurface);
+	cr = cairo_create (lSurface);
 	
 	//cairo_set_source_rgb (cr, 1, 1, 1);
 	//cairo_paint (cr);
@@ -186,6 +186,10 @@ static void sigroutine(int signo)
 	cairo_destroy (cr);
 
 	gtk_widget_queue_draw (pDraw);
+
+	if (pSurface)
+		cairo_surface_destroy (pSurface);
+	pSurface = lSurface;
 }
 
 void activate (GtkApplication *app, gpointer user_data)
