@@ -8,6 +8,7 @@ typedef struct _BALL{
 	unsigned int clr;			//color
 } T_BALL;
 
+void ball_setRadius(T_BALL *pBall, int r);
 int ball_getRadius(T_BALL *pBall);
 
 void ball_getPos(T_BALL *pBall, int *px, int *py);

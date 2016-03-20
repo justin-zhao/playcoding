@@ -14,6 +14,14 @@ int ball_getRadius(T_BALL *pBall)
 	return pBall->r;
 }
 
+void ball_setRadius(T_BALL *pBall, int r)
+{
+	if (!pBall)
+		return;
+
+	pBall->r = r;
+}
+
 void ball_getPos(T_BALL *pBall, int *px, int *py)
 {
 	if (!pBall)
@@ -119,8 +127,8 @@ T_BALL *ball_init(int x, int y, int r, unsigned int clr)
 	pBall->r = r;
 	pBall->clr = clr;
 	pBall->width = 2;
-	pBall->speed.xSpeed = rand()%10+1;
-	pBall->speed.ySpeed = rand()%10+1;
+	pBall->speed.xSpeed = rand()%20-10;
+	pBall->speed.ySpeed = rand()%20-10;
 	
 	return pBall;
 }

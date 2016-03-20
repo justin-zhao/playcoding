@@ -34,6 +34,7 @@ static gboolean configure_event_cb (GtkWidget         *widget,
                     GdkEventConfigure *event,
                     gpointer           data)
 {
+/*
 	if (pSurface)
 		cairo_surface_destroy (pSurface);
 	
@@ -42,8 +43,9 @@ static gboolean configure_event_cb (GtkWidget         *widget,
 									            gtk_widget_get_allocated_width (widget),
 												gtk_widget_get_allocated_height (widget));
 	
+*/
 	/* Initialize the surface to white */
-	clear_surface ();
+//	clear_surface ();
 	
 	/* We've handled the configure event, no need for further processing. */
 	return TRUE;
@@ -168,13 +170,15 @@ static void sigroutine(int signo)
 	if (signo != SIGALRM)
 		return;
 
-//	if (pSurface)
-//		cairo_surface_destroy (pSurface);
+//	if (!pSurface)
+//	{
+		//cairo_surface_destroy (pSurface);
 
-	lSurface = gdk_window_create_similar_surface (gtk_widget_get_window (pDraw),
+		lSurface = gdk_window_create_similar_surface (gtk_widget_get_window (pDraw),
 	                                             CAIRO_CONTENT_COLOR,
 									             winWidth,
 												 winHeight);
+//	}
 	
 	cr = cairo_create (lSurface);
 	
@@ -190,6 +194,7 @@ static void sigroutine(int signo)
 	if (pSurface)
 		cairo_surface_destroy (pSurface);
 	pSurface = lSurface;
+
 }
 
 void activate (GtkApplication *app, gpointer user_data)

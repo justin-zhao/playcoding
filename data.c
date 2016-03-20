@@ -6,10 +6,27 @@
 #include "ball.h"
 #include "data.h"
 
-#define MAX_BALL_NUM	3
+#define MAX_BALL_NUM	10
 
 static T_BALL *ballArray[MAX_BALL_NUM]={NULL};
 static gboolean running = TRUE;
+
+void data_init()
+{
+	int i;
+
+	for(i=0; i<MAX_BALL_NUM; i++)
+	{
+		if (!ballArray[i])
+			ballArray[i] = ball_init(rand()%200, rand()%200, 30, CLR_RGB(rand()%256,rand()%256,rand()%256));
+	}
+
+//	ball_setRadius(ballArray[0], 30);
+	ball_setClr(ballArray[0], CLR_RGB(255,255,0));
+	ball_setClr(ballArray[1], CLR_RGB(0,0,255));
+//	ball_setRadius(ballArray[1], 1);
+	ball_setClr(ballArray[2], CLR_RGB(255,0,128));
+}
 
 static void collision(int ball0, int ball1, int winWidth, int winHeight)
 {
@@ -123,6 +140,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 		xx = abs(x[0] - x[1]);
 		yy = abs(y[0] - y[1]);
 		rr = pow(xx*xx+yy*yy,0.5);
+		//printf("Adjustin collision position,rr=%d,r[0]=%d,r[1]=%d,x[0]=%d,x[1]=%d,y[0]=%d,y[1]=%d.\r\n",(int)rr,r[0],r[1],x[0],x[1],y[0],y[1]);
 	}
 
 	printf("Collision[%d,%d]...\r\n",ball0,ball1);
@@ -151,17 +169,6 @@ static void scanRelation(int winWidth, int winHeight)
 			if (xl*xl+yl*yl < rl*rl)
 				collision(i, j, winWidth, winHeight);
 		}
-	}
-}
-
-void data_init()
-{
-	int i;
-
-	for(i=0; i<MAX_BALL_NUM; i++)
-	{
-		if (!ballArray[i])
-			ballArray[i] = ball_init(rand()%200, rand()%200, 20, CLR_RGB(rand()%256,rand()%256,rand()%256));
 	}
 }
 
