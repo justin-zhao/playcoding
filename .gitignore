@@ -1,2 +1,4 @@
 playcoding
 !.gitignore
+*.out
+tags
