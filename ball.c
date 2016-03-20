@@ -6,7 +6,7 @@
 #include "global.h"
 #include "ball.h"
 
-int ball_getRadius(T_BALL *pBall)
+float ball_getRadius(T_BALL *pBall)
 {
 	if (!pBall)
 		return 0;
@@ -22,7 +22,7 @@ void ball_setRadius(T_BALL *pBall, int r)
 	pBall->r = r;
 }
 
-void ball_getPos(T_BALL *pBall, int *px, int *py)
+void ball_getPos(T_BALL *pBall, float *px, float *py)
 {
 	if (!pBall)
 		return;
@@ -116,7 +116,7 @@ void ball_addSpeed(T_BALL *pBall, float xSpeed, float ySpeed)
 }
 
 //initialize a ball
-T_BALL *ball_init(int x, int y, int r, unsigned int clr)
+T_BALL *ball_init(float x, float y, float r, unsigned int clr)
 {
 	T_BALL *pBall;
 	

@@ -22,16 +22,16 @@ void data_init()
 	}
 
 //	ball_setRadius(ballArray[0], 30);
-	ball_setClr(ballArray[0], CLR_RGB(255,255,0));
-	ball_setClr(ballArray[1], CLR_RGB(0,0,255));
+	ball_setClr(ballArray[0], CLR_RGB(255,0,0));
+//	ball_setClr(ballArray[1], CLR_RGB(0,0,255));
 //	ball_setRadius(ballArray[1], 1);
-	ball_setClr(ballArray[2], CLR_RGB(255,0,128));
+//	ball_setClr(ballArray[2], CLR_RGB(255,0,128));
 }
 
 static void collision(int ball0, int ball1, int winWidth, int winHeight)
 {
 	int mode;
-	int x[2],y[2],r[2];
+	float x[2],y[2],r[2];
 	T_SPEED s[2], cs, ps;
 	double xx,yy,rr,cs0,ps0,cs1,ps1,cx0,cx1,px0,px1,cy0,cy1,py0,py1,tmp;
 
@@ -45,6 +45,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 
 	xx = abs(x[0] - x[1]);
 	yy = abs(y[0] - y[1]);
+	//printf("pow(%f,0.5)", xx*xx+yy*yy);
 	rr = pow(xx*xx+yy*yy,0.5);
 
 	if ((x[0]-x[1]>0 && y[0]-y[1]>0)
@@ -139,6 +140,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 		
 		xx = abs(x[0] - x[1]);
 		yy = abs(y[0] - y[1]);
+		//printf("2.pow(%f,0.5)", xx*xx+yy*yy);
 		rr = pow(xx*xx+yy*yy,0.5);
 		//printf("Adjustin collision position,rr=%d,r[0]=%d,r[1]=%d,x[0]=%d,x[1]=%d,y[0]=%d,y[1]=%d.\r\n",(int)rr,r[0],r[1],x[0],x[1],y[0],y[1]);
 	}
@@ -149,7 +151,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 static void scanRelation(int winWidth, int winHeight)
 {
 	int i,j;
-	int x[2],y[2],r[2];
+	float x[2],y[2],r[2];
 	long xl,yl,rl;
 
 	for(i=0; i<MAX_BALL_NUM-1; i++)
