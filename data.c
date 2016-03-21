@@ -30,7 +30,7 @@ void data_init()
 
 static void collision(int ball0, int ball1, int winWidth, int winHeight)
 {
-	int mode;
+	int mode, i;
 	float x[2],y[2],r[2];
 	T_SPEED s[2], cs, ps;
 	double xx,yy,rr,cs0,ps0,cs1,ps1,cx0,cx1,px0,px1,cy0,cy1,py0,py1,tmp;
@@ -128,7 +128,9 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 	s[1].ySpeed = cs.ySpeed + ps.ySpeed;
 	ball_setSpeed(ballArray[ball1], s[1]);
 
-	while(rr<r[0]+r[1])
+	//To avoid dead loop
+	i = 0;
+	while(rr<r[0]+r[1] && i<10)
 	{
 		ball_move(ballArray[ball0], winWidth, winHeight);
 		ball_move(ballArray[ball1], winWidth, winHeight);
@@ -143,9 +145,11 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 		//printf("2.pow(%f,0.5)", xx*xx+yy*yy);
 		rr = pow(xx*xx+yy*yy,0.5);
 		//printf("Adjustin collision position,rr=%d,r[0]=%d,r[1]=%d,x[0]=%d,x[1]=%d,y[0]=%d,y[1]=%d.\r\n",(int)rr,r[0],r[1],x[0],x[1],y[0],y[1]);
+
+		i++;
 	}
 
-	printf("Collision[%d,%d]...\r\n",ball0,ball1);
+	//printf("Collision[%d,%d]...\r\n",ball0,ball1);
 }
 
 static void scanRelation(int winWidth, int winHeight)
