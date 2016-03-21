@@ -18,7 +18,7 @@ void data_init()
 	for(i=0; i<MAX_BALL_NUM; i++)
 	{
 		if (!ballArray[i])
-			ballArray[i] = ball_init(rand()%200, rand()%200, 30, CLR_RGB(rand()%256,rand()%256,rand()%256));
+			ballArray[i] = ball_init(rand()%200, rand()%200, rand()%50+5, CLR_RGB(rand()%256,rand()%256,rand()%256));
 	}
 
 //	ball_setRadius(ballArray[0], 30);
