@@ -34,7 +34,6 @@ static gboolean configure_event_cb (GtkWidget         *widget,
                     GdkEventConfigure *event,
                     gpointer           data)
 {
-/*
 	if (pSurface)
 		cairo_surface_destroy (pSurface);
 	
@@ -43,9 +42,8 @@ static gboolean configure_event_cb (GtkWidget         *widget,
 									            gtk_widget_get_allocated_width (widget),
 												gtk_widget_get_allocated_height (widget));
 	
-*/
 	/* Initialize the surface to white */
-//	clear_surface ();
+	clear_surface ();
 	
 	/* We've handled the configure event, no need for further processing. */
 	return TRUE;
@@ -59,6 +57,9 @@ static gboolean draw_cb (GtkWidget *widget,
          cairo_t   *cr,
          gpointer   data)
 {
+	if (!pSurface)
+		return FALSE;
+
 	cairo_set_source_surface (cr, pSurface, 0, 0);
 	cairo_paint (cr);
 	
@@ -109,7 +110,7 @@ static gboolean button_press_event_cb (GtkWidget      *widget, GdkEventButton *e
 	/* paranoia check, in case we haven't gotten a configure event */
 	return TRUE;
 	
-	if (pSurface == NULL)
+	if (!pSurface)
 		return FALSE;
 	
 	if (event->button == GDK_BUTTON_PRIMARY)
@@ -137,7 +138,7 @@ static gboolean motion_notify_event_cb (GtkWidget      *widget,
 	return TRUE;
 
 	/* paranoia check, in case we haven't gotten a configure event */
-	if (pSurface == NULL)
+	if (!pSurface)
 		return FALSE;
 	
 	if (event->state & GDK_BUTTON1_MASK)
@@ -158,10 +159,13 @@ static void close_window (void)
 
 static void sigroutine(int signo)
 {
-	cairo_surface_t *lSurface;
+//	cairo_surface_t *lSurface;
 	int winWidth, winHeight;
 	cairo_t *cr;
 	
+	if (!pSurface)
+		return;
+
 	winWidth = gtk_widget_get_allocated_width (pDraw);
 	winHeight = gtk_widget_get_allocated_height (pDraw);
 	if (winWidth < 1 || winHeight < 1)
@@ -169,21 +173,21 @@ static void sigroutine(int signo)
 	
 	if (signo != SIGALRM)
 		return;
-
-//	if (!pSurface)
-//	{
+/*
+	if (!pSurface)
+	{
 		//cairo_surface_destroy (pSurface);
-
-		lSurface = gdk_window_create_similar_surface (gtk_widget_get_window (pDraw),
+		pSurface = gdk_window_create_similar_surface (gtk_widget_get_window (pDraw),
 	                                             CAIRO_CONTENT_COLOR,
 									             winWidth,
 												 winHeight);
-//	}
+	}
+*/
 	
-	cr = cairo_create (lSurface);
+	cr = cairo_create (pSurface);
 	
-	//cairo_set_source_rgb (cr, 1, 1, 1);
-	//cairo_paint (cr);
+	cairo_set_source_rgb (cr, 1, 1, 1);
+	cairo_paint (cr);
 
 	refresh_all(cr, winWidth, winHeight);
 	
@@ -191,10 +195,11 @@ static void sigroutine(int signo)
 
 	gtk_widget_queue_draw (pDraw);
 
+/*
 	if (pSurface)
 		cairo_surface_destroy (pSurface);
 	pSurface = lSurface;
-
+*/
 }
 
 void activate (GtkApplication *app, gpointer user_data)
