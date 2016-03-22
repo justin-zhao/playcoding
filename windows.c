@@ -13,6 +13,7 @@
 static GtkWidget *pDraw = NULL;
 /* Surface to store current scribbles */
 static cairo_surface_t *pSurface = NULL;
+int winWidth = 0, winHeight = 0;
 
 void clear_surface (void)
 {
@@ -36,14 +37,17 @@ static gboolean configure_event_cb (GtkWidget         *widget,
 {
 	if (pSurface)
 		cairo_surface_destroy (pSurface);
+
+	winWidth = gtk_widget_get_allocated_width (pDraw);
+	winHeight = gtk_widget_get_allocated_height (pDraw);
 	
 	pSurface = gdk_window_create_similar_surface (gtk_widget_get_window (widget),
 	                                            CAIRO_CONTENT_COLOR,
-									            gtk_widget_get_allocated_width (widget),
-												gtk_widget_get_allocated_height (widget));
+												winWidth,
+												winHeight);
 	
 	/* Initialize the surface to white */
-	clear_surface ();
+	//clear_surface ();
 	
 	/* We've handled the configure event, no need for further processing. */
 	return TRUE;
@@ -60,8 +64,12 @@ static gboolean draw_cb (GtkWidget *widget,
 	if (!pSurface)
 		return FALSE;
 
+	if (winWidth < 1 || winHeight < 1)
+	  return FALSE;
+
 	cairo_set_source_surface (cr, pSurface, 0, 0);
-	cairo_paint (cr);
+	refresh_all(cr, winWidth, winHeight);
+	//cairo_paint (cr);
 	
 	return FALSE;
 }
@@ -159,47 +167,13 @@ static void close_window (void)
 
 static void sigroutine(int signo)
 {
-//	cairo_surface_t *lSurface;
-	int winWidth, winHeight;
-	cairo_t *cr;
-	
 	if (!pSurface)
 		return;
 
-	winWidth = gtk_widget_get_allocated_width (pDraw);
-	winHeight = gtk_widget_get_allocated_height (pDraw);
-	if (winWidth < 1 || winHeight < 1)
-	  return;
-	
 	if (signo != SIGALRM)
 		return;
-/*
-	if (!pSurface)
-	{
-		//cairo_surface_destroy (pSurface);
-		pSurface = gdk_window_create_similar_surface (gtk_widget_get_window (pDraw),
-	                                             CAIRO_CONTENT_COLOR,
-									             winWidth,
-												 winHeight);
-	}
-*/
-	
-	cr = cairo_create (pSurface);
-	
-	cairo_set_source_rgb (cr, 1, 1, 1);
-	cairo_paint (cr);
-
-	refresh_all(cr, winWidth, winHeight);
-	
-	cairo_destroy (cr);
 
 	gtk_widget_queue_draw (pDraw);
-
-/*
-	if (pSurface)
-		cairo_surface_destroy (pSurface);
-	pSurface = lSurface;
-*/
 }
 
 void activate (GtkApplication *app, gpointer user_data)
