@@ -1,0 +1,3 @@
+cairo tutorial: http://cairographics.org/tutorial/
+gdk geting started: https://developer.gnome.org/gtk3/stable/gtk-getting-started.html
+gdk reference manual: https://developer.gnome.org/gdk3/

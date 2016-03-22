@@ -183,7 +183,7 @@ void activate (GtkApplication *app, gpointer user_data)
  	struct itimerval timerv, timero;
 	
 	window = gtk_application_window_new (app);
-	gtk_window_set_title (GTK_WINDOW (window), "Drawing Area");
+	gtk_window_set_title (GTK_WINDOW (window), "Play Coding");
 	
 	g_signal_connect (window, "destroy", G_CALLBACK (close_window), NULL);
 	g_signal_connect (window, "key_press_event", G_CALLBACK (on_key_press), NULL);
