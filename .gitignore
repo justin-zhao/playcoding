@@ -2,3 +2,4 @@ playcoding
 !.gitignore
 *.out
 tags
+*.swp
