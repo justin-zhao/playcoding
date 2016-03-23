@@ -14,6 +14,7 @@ static GtkWidget *pDraw = NULL;
 /* Surface to store current scribbles */
 static cairo_surface_t *pSurface = NULL;
 int winWidth = 0, winHeight = 0;
+static gint timer = 0;
 
 void clear_surface (void)
 {
@@ -47,7 +48,7 @@ static gboolean configure_event_cb (GtkWidget         *widget,
 												winHeight);
 	
 	/* Initialize the surface to white */
-	//clear_surface ();
+	clear_surface ();
 	
 	/* We've handled the configure event, no need for further processing. */
 	return TRUE;
@@ -68,8 +69,8 @@ static gboolean draw_cb (GtkWidget *widget,
 	  return FALSE;
 
 	cairo_set_source_surface (cr, pSurface, 0, 0);
-	refresh_all(cr, winWidth, winHeight);
-	//cairo_paint (cr);
+//	refresh_all(cr, winWidth, winHeight);
+	cairo_paint (cr);
 	
 	return FALSE;
 }
@@ -80,31 +81,23 @@ static void draw_brush (GtkWidget *widget,
             gdouble    y)
 {
 	cairo_t *cr;
-	
+
 	return;
 
 	/* Paint to the surface, where we store our state */
 	cr = cairo_create (pSurface);
 	
-	//cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
 	cairo_set_source_rgb(cr, 0.0, 0.0, 1.0);
-	
-	//cairo_move_to (cr, x-3, y-3);
-	
-	cairo_set_line_width (cr, 2);
-	
-	//cairo_save (cr);
-	//cairo_scale (cr, 0.1, 1);
-	cairo_arc (cr, x, y, 10, 0, 2 * M_PI);
-	cairo_stroke (cr);
-	
-	//cairo_rectangle (cr, x - 3, y - 3, 6, 6);
-	//cairo_fill (cr);
+	cairo_rectangle (cr, x - 3, y - 3, 6, 6);
+	cairo_fill (cr);
 	
 	cairo_destroy (cr);
 	
 	/* Now invalidate the affected region of the drawing area. */
-	gtk_widget_queue_draw_area (widget, x - 40, y - 40, 80, 80);
+	gtk_widget_queue_draw (widget);
+	//gtk_widget_queue_draw_area (widget, x - 3, y - 3, 6, 6);
+
+	return;
 }
 
 /* Handle button press events by either drawing a rectangle
@@ -115,9 +108,9 @@ static void draw_brush (GtkWidget *widget,
 static gboolean button_press_event_cb (GtkWidget      *widget, GdkEventButton *event,
                        gpointer        data)
 {
-	/* paranoia check, in case we haven't gotten a configure event */
 	return TRUE;
-	
+
+	/* paranoia check, in case we haven't gotten a configure event */
 	if (!pSurface)
 		return FALSE;
 	
@@ -143,8 +136,6 @@ static gboolean motion_notify_event_cb (GtkWidget      *widget,
                         GdkEventMotion *event,
                         gpointer        data)
 {
-	return TRUE;
-
 	/* paranoia check, in case we haven't gotten a configure event */
 	if (!pSurface)
 		return FALSE;
@@ -158,29 +149,46 @@ static gboolean motion_notify_event_cb (GtkWidget      *widget,
 
 static void close_window (void)
 {
+	usleep(100);
+
 	if (pSurface)
 		cairo_surface_destroy (pSurface);
 	pSurface = NULL;
 
-	gtk_main_quit ();
+	gtk_main_quit();
 }
 
-static void sigroutine(int signo)
+//static void sigroutine(int signo)
+gint sigroutine(gpointer data)
 {
+	cairo_t *cr;
+
 	if (!pSurface)
 		return;
-
+/*
 	if (signo != SIGALRM)
 		return;
+*/
+	
+	/* Paint to the surface, where we store our state */
+	cr = cairo_create (pSurface);
+	cairo_set_source_rgb (cr, 1, 1, 1);
+	cairo_paint (cr);
+	refresh_all(cr, winWidth, winHeight);
 
-	gtk_widget_queue_draw (pDraw);
+	cairo_destroy (cr);
+
+	gtk_widget_queue_draw ((GtkWidget *)data);
+	//gtk_widget_queue_draw (pDraw);
+
+	return TRUE;
 }
 
 void activate (GtkApplication *app, gpointer user_data)
 {
 	GtkWidget *window;
 	GtkWidget *frame;
- 	struct itimerval timerv, timero;
+// 	struct itimerval timerv, timero;
 	
 	window = gtk_application_window_new (app);
 	gtk_window_set_title (GTK_WINDOW (window), "Play Coding");
@@ -220,13 +228,15 @@ void activate (GtkApplication *app, gpointer user_data)
 	gtk_widget_set_events (pDraw, gtk_widget_get_events (pDraw)
 	                                   | GDK_BUTTON_PRESS_MASK
 	                                   | GDK_POINTER_MOTION_MASK);
-
+/*
 	signal(SIGALRM, sigroutine);
 	timerv.it_value.tv_sec = 0;
 	timerv.it_value.tv_usec = 40000;
 	timerv.it_interval.tv_sec = 0;
 	timerv.it_interval.tv_usec = 40000;
 	setitimer(ITIMER_REAL, &timerv, &timero);
+*/
+	timer = g_timeout_add (40, sigroutine, pDraw);
 	
 	gtk_widget_show_all (window);
 }

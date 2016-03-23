@@ -6,7 +6,7 @@
 #include "ball.h"
 #include "data.h"
 
-#define MAX_BALL_NUM	20
+#define MAX_BALL_NUM	10
 
 static T_BALL *ballArray[MAX_BALL_NUM]={NULL};
 static gboolean running = TRUE;

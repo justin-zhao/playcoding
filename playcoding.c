@@ -16,7 +16,6 @@ int main (int argc, char **argv)
 	status = g_application_run (G_APPLICATION (app), argc, argv);
 	g_object_unref (app);
 	
-	sleep(1);
 	data_destroy();
 	
 	return status;
