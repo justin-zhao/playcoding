@@ -6,7 +6,7 @@
 #include "ball.h"
 #include "data.h"
 
-#define MAX_BALL_NUM	10
+#define MAX_BALL_NUM	10	
 
 static T_BALL *ballArray[MAX_BALL_NUM]={NULL};
 static gboolean running = TRUE;
@@ -18,7 +18,7 @@ void data_init()
 	for(i=0; i<MAX_BALL_NUM; i++)
 	{
 		if (!ballArray[i])
-			ballArray[i] = ball_init(rand()%200, rand()%200, rand()%50+5, CLR_RGB(rand()%256,rand()%256,rand()%256));
+			ballArray[i] = ball_init(rand()%200, rand()%200, rand()%30+5, CLR_RGB(rand()%256,rand()%256,rand()%256));
 	}
 
 //	ball_setRadius(ballArray[0], 30);
@@ -28,6 +28,122 @@ void data_init()
 //	ball_setClr(ballArray[2], CLR_RGB(255,0,128));
 }
 
+#if 1
+static void collision(int ball0, int ball1, int winWidth, int winHeight)
+{
+	int mode, i;
+	float x[2],y[2],r[2];
+	T_SPEED s[2], cs[2];
+	double xx,yy,rr,cx,px,cy,py,tx,ty,tmp;
+
+	r[0] = ball_getRadius(ballArray[ball0]);
+	r[1] = ball_getRadius(ballArray[ball1]);
+	ball_getPos(ballArray[ball0], &(x[0]), &(y[0]));
+	ball_getPos(ballArray[ball1], &(x[1]), &(y[1]));
+
+	s[0] = ball_getSpeed(ballArray[ball0]);
+	s[1] = ball_getSpeed(ballArray[ball1]);
+
+	xx = abs(x[0] - x[1]);
+	yy = abs(y[0] - y[1]);
+	rr = pow(xx*xx+yy*yy,0.5);
+
+	if ((x[0]-x[1]>0 && y[0]-y[1]>0)
+		|| (x[0]-x[1]<0 && y[0]-y[1]<0))
+		mode = 1;
+	else
+		mode = 0;
+
+//transform to collision coordinate system
+	if (mode)
+	{
+	//transform to collision
+		for(i=0; i<2; i++)
+		{
+			cx = xx*s[i].xSpeed/rr;
+			cy = yy*s[i].ySpeed/rr;
+			px = yy*s[i].xSpeed/rr;
+			py = -xx*s[i].ySpeed/rr;
+
+			cs[i].xSpeed = cx + cy;
+			cs[i].ySpeed = px + py;
+		}
+
+	//exchange collision speed
+		tmp = cs[0].xSpeed;
+		cs[0].xSpeed = cs[1].xSpeed;
+		cs[1].xSpeed = tmp;
+
+	//transform to normal
+		for(i=0; i<2; i++)
+		{
+			tx = xx*cs[i].xSpeed/rr;
+			s[i].xSpeed = yy*cs[i].ySpeed/rr;
+			s[i].xSpeed = s[i].xSpeed + tx;
+
+			ty = yy*cs[i].xSpeed/rr;
+			s[i].ySpeed = -xx*cs[i].ySpeed/rr;
+			s[i].ySpeed = s[i].ySpeed + ty;
+		}
+	}
+	else
+	{
+	//transform to collision
+		for(i=0; i<2; i++)
+		{
+			cx = xx*s[i].xSpeed/rr;
+			cy = -yy*s[i].ySpeed/rr;
+			px = yy*s[i].xSpeed/rr;
+			py = xx*s[i].ySpeed/rr;
+
+			cs[i].xSpeed = cx + cy;
+			cs[i].ySpeed = px + py;
+		}
+
+	//exchange collision speed
+		tmp = cs[0].xSpeed;
+		cs[0].xSpeed = cs[1].xSpeed;
+		cs[1].xSpeed = tmp;
+
+	//transform to normal
+		for(i=0; i<2; i++)
+		{
+			tx = xx*cs[i].xSpeed/rr;
+			s[i].xSpeed = yy*cs[i].ySpeed/rr;
+			s[i].xSpeed = s[i].xSpeed + tx;
+
+			ty = -yy*cs[i].xSpeed/rr;
+			s[i].ySpeed = xx*cs[i].ySpeed/rr;
+			s[i].ySpeed = s[i].ySpeed + ty;
+		}
+	}
+
+	//set new speed
+	ball_setSpeed(ballArray[ball0], s[0]);
+	ball_setSpeed(ballArray[ball1], s[1]);
+
+	//To avoid dead loop
+	i = 0;
+	while(rr<r[0]+r[1] && i<5)
+	{
+		ball_move(ballArray[ball0], winWidth, winHeight);
+		ball_move(ballArray[ball1], winWidth, winHeight);
+
+		r[0] = ball_getRadius(ballArray[ball0]);
+		r[1] = ball_getRadius(ballArray[ball1]);
+		ball_getPos(ballArray[ball0], &(x[0]), &(y[0]));
+		ball_getPos(ballArray[ball1], &(x[1]), &(y[1]));
+		
+		xx = abs(x[0] - x[1]);
+		yy = abs(y[0] - y[1]);
+		rr = pow(xx*xx+yy*yy,0.5);
+
+		i++;
+	}
+
+	//printf("Collision[%d,%d]...\r\n",ball0,ball1);
+}
+#else
 static void collision(int ball0, int ball1, int winWidth, int winHeight)
 {
 	int mode, i;
@@ -101,8 +217,8 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 	}
 	else
 	{
-		cs.xSpeed = yy*cs0/rr;
-		cs.ySpeed = xx*cs0/rr;
+		cs.xSpeed = xx*cs0/rr;
+		cs.ySpeed = yy*cs0/rr;
 		ps.xSpeed = -yy*ps0/rr;
 		ps.ySpeed = xx*ps0/rr;
 	}
@@ -119,8 +235,8 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 	}
 	else
 	{
-		cs.xSpeed = yy*cs1/rr;
-		cs.ySpeed = xx*cs1/rr;
+		cs.xSpeed = xx*cs1/rr;
+		cs.ySpeed = yy*cs1/rr;
 		ps.xSpeed = -yy*ps1/rr;
 		ps.ySpeed = xx*ps1/rr;
 	}
@@ -151,6 +267,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 
 	//printf("Collision[%d,%d]...\r\n",ball0,ball1);
 }
+#endif
 
 static void scanRelation(int winWidth, int winHeight)
 {
@@ -206,31 +323,39 @@ void data_destroy()
 	}
 }
 
+static int selball = 0;
 gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
-	printf("Key pressed: %d\r\n", event->keyval);
+	if (event->keyval == 65289)
+	{
+		selball++;
+		selball = selball % MAX_BALL_NUM;
+	}
 
-	if (!ballArray[0])
+	printf("Key pressed[%d]: %d\r\n", selball, event->keyval);
+
+	if (!ballArray[selball])
 		return FALSE;
 	
 	//press up
 	if (event->keyval == 65362)
-	   ball_addSpeed(ballArray[0], 0, -1);
+	   ball_addSpeed(ballArray[selball], 0, -1);
 	
 	//press down
 	if (event->keyval == 65364)
-	   ball_addSpeed(ballArray[0], 0, 1);
+	   ball_addSpeed(ballArray[selball], 0, 1);
 	
 	//press left
 	if (event->keyval == 65361)
-	   ball_addSpeed(ballArray[0], -1, 0);
+	   ball_addSpeed(ballArray[selball], -1, 0);
 	 
 	//press right
 	if (event->keyval == 65363)
-	   ball_addSpeed(ballArray[0], 1, 0);
-
+	   ball_addSpeed(ballArray[selball], 1, 0);
+/*
 	if (event->keyval == 46)
 		ball_setClr(ballArray[0], CLR_RGB(rand()%256,rand()%256,rand()%256));
+*/
 
 	if (event->keyval == 113)
 		running = FALSE;
