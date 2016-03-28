@@ -53,70 +53,35 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 		|| (x[0]-x[1]<0 && y[0]-y[1]<0))
 		mode = 1;
 	else
-		mode = 0;
+		mode = -1;
 
-//transform to collision coordinate system
-	if (mode)
+	//transform to collision coordinate system
+	for(i=0; i<2; i++)
 	{
-		//transform to collision coordinate system
-		for(i=0; i<2; i++)
-		{
-			cx = xx*s[i].xSpeed/rr;
-			cy = yy*s[i].ySpeed/rr;
-			px = yy*s[i].xSpeed/rr;
-			py = -xx*s[i].ySpeed/rr;
+		cx = xx*s[i].xSpeed/rr;
+		cy = mode*yy*s[i].ySpeed/rr;
+		px = yy*s[i].xSpeed/rr;
+		py = -mode*xx*s[i].ySpeed/rr;
 
-			cs[i].xSpeed = cx + cy;
-			cs[i].ySpeed = px + py;
-		}
-
-		//exchange collision speed
-		tmp = cs[0].xSpeed;
-		cs[0].xSpeed = cs[1].xSpeed;
-		cs[1].xSpeed = tmp;
-
-		//transform to normal coordinate system
-		for(i=0; i<2; i++)
-		{
-			xc = xx*cs[i].xSpeed/rr;
-			xp = yy*cs[i].ySpeed/rr;
-			yc = yy*cs[i].xSpeed/rr;
-			yp = -xx*cs[i].ySpeed/rr;
-
-			s[i].xSpeed = xc + xp;
-			s[i].ySpeed = yc + yp;
-		}
+		cs[i].xSpeed = cx + cy;
+		cs[i].ySpeed = px + py;
 	}
-	else
+
+	//exchange collision speed
+	tmp = cs[0].xSpeed;
+	cs[0].xSpeed = cs[1].xSpeed;
+	cs[1].xSpeed = tmp;
+
+	//transform to normal coordinate system
+	for(i=0; i<2; i++)
 	{
-		//transform to collision coordinate system
-		for(i=0; i<2; i++)
-		{
-			cx = xx*s[i].xSpeed/rr;
-			cy = -yy*s[i].ySpeed/rr;
-			px = yy*s[i].xSpeed/rr;
-			py = xx*s[i].ySpeed/rr;
+		xc = xx*cs[i].xSpeed/rr;
+		xp = yy*cs[i].ySpeed/rr;
+		yc = mode*yy*cs[i].xSpeed/rr;
+		yp = -mode*xx*cs[i].ySpeed/rr;
 
-			cs[i].xSpeed = cx + cy;
-			cs[i].ySpeed = px + py;
-		}
-
-		//exchange collision speed
-		tmp = cs[0].xSpeed;
-		cs[0].xSpeed = cs[1].xSpeed;
-		cs[1].xSpeed = tmp;
-
-		//transform to normal coordinate system
-		for(i=0; i<2; i++)
-		{
-			xc = xx*cs[i].xSpeed/rr;
-			xp = yy*cs[i].ySpeed/rr;
-			yc = -yy*cs[i].xSpeed/rr;
-			yp = xx*cs[i].ySpeed/rr;
-
-			s[i].xSpeed = xc + xp;
-			s[i].ySpeed = yc + yp;
-		}
+		s[i].xSpeed = xc + xp;
+		s[i].ySpeed = yc + yp;
 	}
 
 	//set new speed
@@ -141,8 +106,6 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 
 		i++;
 	}
-
-	//printf("Collision[%d,%d]...\r\n",ball0,ball1);
 }
 #else
 static void collision(int ball0, int ball1, int winWidth, int winHeight)
