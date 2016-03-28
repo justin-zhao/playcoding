@@ -18,6 +18,7 @@ void data_init()
 	for(i=0; i<MAX_BALL_NUM; i++)
 	{
 		if (!ballArray[i])
+			//ballArray[i] = ball_init(rand()%200, rand()%200, 50, CLR_RGB(rand()%256,rand()%256,rand()%256));
 			ballArray[i] = ball_init(rand()%200, rand()%200, rand()%30+5, CLR_RGB(rand()%256,rand()%256,rand()%256));
 	}
 
@@ -34,7 +35,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 	int mode, i;
 	float x[2],y[2],r[2];
 	T_SPEED s[2], cs[2];
-	double xx,yy,rr,cx,px,cy,py,tx,ty,tmp;
+	double xx,yy,rr,cx,px,cy,py,xc,xp,yc,yp,tmp;
 
 	r[0] = ball_getRadius(ballArray[ball0]);
 	r[1] = ball_getRadius(ballArray[ball1]);
@@ -57,7 +58,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 //transform to collision coordinate system
 	if (mode)
 	{
-	//transform to collision
+		//transform to collision coordinate system
 		for(i=0; i<2; i++)
 		{
 			cx = xx*s[i].xSpeed/rr;
@@ -69,26 +70,26 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 			cs[i].ySpeed = px + py;
 		}
 
-	//exchange collision speed
+		//exchange collision speed
 		tmp = cs[0].xSpeed;
 		cs[0].xSpeed = cs[1].xSpeed;
 		cs[1].xSpeed = tmp;
 
-	//transform to normal
+		//transform to normal coordinate system
 		for(i=0; i<2; i++)
 		{
-			tx = xx*cs[i].xSpeed/rr;
-			s[i].xSpeed = yy*cs[i].ySpeed/rr;
-			s[i].xSpeed = s[i].xSpeed + tx;
+			xc = xx*cs[i].xSpeed/rr;
+			xp = yy*cs[i].ySpeed/rr;
+			yc = yy*cs[i].xSpeed/rr;
+			yp = -xx*cs[i].ySpeed/rr;
 
-			ty = yy*cs[i].xSpeed/rr;
-			s[i].ySpeed = -xx*cs[i].ySpeed/rr;
-			s[i].ySpeed = s[i].ySpeed + ty;
+			s[i].xSpeed = xc + xp;
+			s[i].ySpeed = yc + yp;
 		}
 	}
 	else
 	{
-	//transform to collision
+		//transform to collision coordinate system
 		for(i=0; i<2; i++)
 		{
 			cx = xx*s[i].xSpeed/rr;
@@ -100,21 +101,21 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 			cs[i].ySpeed = px + py;
 		}
 
-	//exchange collision speed
+		//exchange collision speed
 		tmp = cs[0].xSpeed;
 		cs[0].xSpeed = cs[1].xSpeed;
 		cs[1].xSpeed = tmp;
 
-	//transform to normal
+		//transform to normal coordinate system
 		for(i=0; i<2; i++)
 		{
-			tx = xx*cs[i].xSpeed/rr;
-			s[i].xSpeed = yy*cs[i].ySpeed/rr;
-			s[i].xSpeed = s[i].xSpeed + tx;
+			xc = xx*cs[i].xSpeed/rr;
+			xp = yy*cs[i].ySpeed/rr;
+			yc = -yy*cs[i].xSpeed/rr;
+			yp = xx*cs[i].ySpeed/rr;
 
-			ty = -yy*cs[i].xSpeed/rr;
-			s[i].ySpeed = xx*cs[i].ySpeed/rr;
-			s[i].ySpeed = s[i].ySpeed + ty;
+			s[i].xSpeed = xc + xp;
+			s[i].ySpeed = yc + yp;
 		}
 	}
 
@@ -124,7 +125,7 @@ static void collision(int ball0, int ball1, int winWidth, int winHeight)
 
 	//To avoid dead loop
 	i = 0;
-	while(rr<r[0]+r[1] && i<5)
+	while(rr<r[0]+r[1] && i<6)
 	{
 		ball_move(ballArray[ball0], winWidth, winHeight);
 		ball_move(ballArray[ball1], winWidth, winHeight);
