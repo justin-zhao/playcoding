@@ -38,5 +38,8 @@ void ball_destroy(T_BALL *pBall);
 //set color for ball
 void ball_setClr(T_BALL *pBall, unsigned int clr);
 
+//get color from ball
+unsigned ball_getClr(T_BALL *pBall);
+
 //set line width for ball
 void ball_setWidth(T_BALL *pBall, unsigned int width);

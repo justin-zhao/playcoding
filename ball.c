@@ -145,6 +145,12 @@ void ball_setClr(T_BALL *pBall, unsigned int clr)
 	pBall->clr = clr;
 }
 
+//get color from ball
+unsigned ball_getClr(T_BALL *pBall)
+{
+	return pBall->clr;
+}
+
 //set line width for ball
 void ball_setWidth(T_BALL *pBall, unsigned int width)
 {

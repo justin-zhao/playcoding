@@ -10,6 +10,10 @@
 
 static T_BALL *ballArray[MAX_BALL_NUM]={NULL};
 static gboolean running = TRUE;
+static unsigned int selClr=0;
+static int selBall = 0;
+//static double block = 0.0001;
+static double block = 0;
 
 void data_init()
 {
@@ -22,11 +26,8 @@ void data_init()
 			ballArray[i] = ball_init(rand()%200, rand()%200, rand()%30+5, CLR_RGB(rand()%256,rand()%256,rand()%256));
 	}
 
-//	ball_setRadius(ballArray[0], 30);
-	ball_setClr(ballArray[0], CLR_RGB(255,0,0));
-//	ball_setClr(ballArray[1], CLR_RGB(0,0,255));
-//	ball_setRadius(ballArray[1], 1);
-//	ball_setClr(ballArray[2], CLR_RGB(255,0,128));
+	selClr = ball_getClr(ballArray[selBall]);
+	ball_setClr(ballArray[selBall], CLR_RGB(255,0,0));
 }
 
 #if 1
@@ -267,7 +268,22 @@ gboolean refresh_all(cairo_t *pCR, int winWidth, int winHeight)
 	for(i=0; i<MAX_BALL_NUM; i++)
 	{
 		if (ballArray[i])
+		{
+			T_SPEED speed;
+			
+			speed = ball_getSpeed(ballArray[i]);
+			if (speed.xSpeed > 0)
+				speed.xSpeed = speed.xSpeed - block*speed.xSpeed*speed.xSpeed;
+			else
+				speed.xSpeed = speed.xSpeed + block*speed.xSpeed*speed.xSpeed;
+			if (speed.ySpeed > 0)
+				speed.ySpeed = speed.ySpeed - block*speed.ySpeed*speed.ySpeed;
+			else
+				speed.ySpeed = speed.ySpeed + block*speed.ySpeed*speed.ySpeed;
+
+			ball_setSpeed(ballArray[i], speed);
 			ball_refresh(ballArray[i], pCR, winWidth, winHeight);
+		}
 	}
 
 	return running;
@@ -287,35 +303,47 @@ void data_destroy()
 	}
 }
 
-static int selball = 0;
 gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
+	if (!ballArray[selBall])
+		return FALSE;
+
 	if (event->keyval == 65289)
 	{
-		selball++;
-		selball = selball % MAX_BALL_NUM;
+		ball_setClr(ballArray[selBall], selClr);
+
+		selBall++;
+		selBall = selBall % MAX_BALL_NUM;
+
+		selClr = ball_getClr(ballArray[selBall]);
+		ball_setClr(ballArray[selBall], CLR_RGB(255,0,0));
 	}
 
-	printf("Key pressed[%d]: %d\r\n", selball, event->keyval);
+	printf("Key pressed[%d]: %d\r\n", selBall, event->keyval);
 
-	if (!ballArray[selball])
-		return FALSE;
-	
 	//press up
 	if (event->keyval == 65362)
-	   ball_addSpeed(ballArray[selball], 0, -1);
+	   ball_addSpeed(ballArray[selBall], 0, -1);
 	
 	//press down
 	if (event->keyval == 65364)
-	   ball_addSpeed(ballArray[selball], 0, 1);
+	   ball_addSpeed(ballArray[selBall], 0, 1);
 	
 	//press left
 	if (event->keyval == 65361)
-	   ball_addSpeed(ballArray[selball], -1, 0);
+	   ball_addSpeed(ballArray[selBall], -1, 0);
 	 
 	//press right
 	if (event->keyval == 65363)
-	   ball_addSpeed(ballArray[selball], 1, 0);
+	   ball_addSpeed(ballArray[selBall], 1, 0);
+
+	//press +
+	if (event->keyval == 43)
+		block = 2*block;
+
+	//press -
+	if (event->keyval == 45)
+		block = block/2.0;
 /*
 	if (event->keyval == 46)
 		ball_setClr(ballArray[0], CLR_RGB(rand()%256,rand()%256,rand()%256));
