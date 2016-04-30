@@ -29,7 +29,7 @@ CFLAGS := -c -g -W -Wall -O2
 LFLAGS := 
 
 $(TARGET) :
-	$(CC) -g $(INCLUDES) -o $@ $(SRCS) $(LIBS) -L/usr/lib/x86_64-linux-gnu -lm
+	$(CC) -g $(INCLUDES) -o $@ $(SRCS) $(LIBS) -L/usr/lib/x86_64-linux-gnu -lm -lcurses
 
 temp : $(OBJS)
 	$(LD) $(LFLAGS) -o $@ $< $(LIBS)

@@ -6,14 +6,15 @@
 #include "ball.h"
 #include "data.h"
 
-#define MAX_BALL_NUM	10	
+#define MAX_BALL_NUM	20	
 
+static char defname[32] = {"Yuan"};
 static T_BALL *ballArray[MAX_BALL_NUM]={NULL};
 static gboolean running = TRUE;
 static unsigned int selClr=0;
 static int selBall = 0;
-//static double block = 0.0001;
-static double block = 0;
+static double block = 0.0001;
+//static double block = 0;
 
 void data_init()
 {
@@ -27,6 +28,7 @@ void data_init()
 	}
 
 	selClr = ball_getClr(ballArray[selBall]);
+	ball_setName(ballArray[selBall], defname);
 	ball_setClr(ballArray[selBall], CLR_RGB(255,0,0));
 }
 
@@ -311,12 +313,14 @@ gboolean on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data
 	if (event->keyval == 65289)
 	{
 		ball_setClr(ballArray[selBall], selClr);
+		ball_setName(ballArray[selBall], "");
 
 		selBall++;
 		selBall = selBall % MAX_BALL_NUM;
 
 		selClr = ball_getClr(ballArray[selBall]);
 		ball_setClr(ballArray[selBall], CLR_RGB(255,0,0));
+		ball_setName(ballArray[selBall], defname);
 	}
 
 	printf("Key pressed[%d]: %d\r\n", selBall, event->keyval);

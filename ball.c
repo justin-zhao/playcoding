@@ -6,6 +6,11 @@
 #include "global.h"
 #include "ball.h"
 
+void ball_setName(T_BALL *pBall, char *pName)
+{
+	strcpy(pBall->name, pName);
+}
+
 float ball_getRadius(T_BALL *pBall)
 {
 	if (!pBall)
@@ -56,10 +61,22 @@ void ball_setSpeed(T_BALL *pBall, T_SPEED speed)
 //show ball on surface
 void ball_show(T_BALL *pBall, cairo_t *pCR)
 {
+	cairo_text_extents_t te;
+	char str[32];
+
 	if (!pBall || !pCR)
 		return;
 	
 	cairo_set_source_rgb(pCR, CLR_FETCHR(pBall->clr), CLR_FETCHG(pBall->clr), CLR_FETCHB(pBall->clr));
+
+	if (strlen(pBall->name) > 0)
+	{
+		strcpy(str, pBall->name);
+		cairo_text_extents (pCR, str, &te);
+    	cairo_move_to (pCR, pBall->x, pBall->y);
+    	cairo_show_text (pCR, str);
+	}
+
 	cairo_set_line_width (pCR, pBall->width);
 	
 	cairo_arc (pCR, pBall->x, pBall->y, pBall->r, 0, 2 * M_PI);
@@ -129,6 +146,7 @@ T_BALL *ball_init(float x, float y, float r, unsigned int clr)
 	pBall->width = 2;
 	pBall->speed.xSpeed = rand()%20-10;
 	pBall->speed.ySpeed = rand()%20-10;
+	strcpy(pBall->name, "");
 	
 	return pBall;
 }

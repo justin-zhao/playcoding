@@ -2,11 +2,14 @@
 #include <gtk/gtk.h>
 
 typedef struct _BALL{
-	float x, y, r;	//x position, y position, radious
+	char name[32];			//ball name
+	float x, y, r;			//x position, y position, radious
 	unsigned int width;		//line width
-	T_SPEED speed;	//move speed
-	unsigned int clr;			//color
+	T_SPEED speed;			//move speed
+	unsigned int clr;		//color
 } T_BALL;
+
+void ball_setName(T_BALL *pBall, char *pName);
 
 void ball_setRadius(T_BALL *pBall, int r);
 float ball_getRadius(T_BALL *pBall);
