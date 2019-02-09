@@ -8,6 +8,8 @@ int main (int argc, char **argv)
 {
 	GtkApplication *app;
 	int i,j,k,l,status;
+
+#if (0)
 	char ch;
 	char *pMatrix=NULL;
 
@@ -109,6 +111,7 @@ int main (int argc, char **argv)
 	free(pMatrix);
 
 	return 0;
+#endif
 
 	app = gtk_application_new ("justin.gtk", G_APPLICATION_FLAGS_NONE);
 	g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
